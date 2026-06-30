@@ -30,12 +30,8 @@ Affected: `google.golang.org/grpc` < v1.79.3. Fixed in v1.79.3 (PR #8981).
 ## Usage
 
 ```bash
-# Native (requires Go + Python 3 with h2):
+# Install the Python HTTP/2 dependency:
 pip install h2
-./run.sh
-
-# Docker (no local dependencies):
-docker compose up --build --abort-on-container-exit
 
 # Against an existing vulnerable gRPC server:
 python3 poc.py --host <HOST> --port <PORT>
@@ -71,8 +67,7 @@ malformed path shape to the vulnerable backend.
 
 ## Requirements
 
-- For native: Go (any recent version), Python 3.8+, `h2` (`pip install h2`)
-- For Docker: Docker + Docker Compose
+- Attacker: Python 3.8+, `h2` (`pip install h2`)
 - Target: gRPC-Go server using `authz` package with deny rules
 
 ## Files
@@ -80,13 +75,8 @@ malformed path shape to the vulnerable backend.
 | File | Description |
 |------|-------------|
 | `poc.py` | Python PoC -- sends 3 raw HTTP/2 calls (baseline/attack/control) to prove the bypass |
-| `server/main.go` | Vulnerable gRPC server with deny-list RBAC policy (grpc-go v1.71.0) |
-| `server/go.mod` | Go module pinned to vulnerable grpc-go v1.71.0 |
-| `run.sh` | Builds server, starts it, runs PoC, shows server log |
-| `Dockerfile` | Multi-stage build (Go server + Python client) |
-| `docker-compose.yml` | One-command Docker setup with health checks |
-| `proto/service.proto` | Protobuf service definition |
-| `proof_output.txt` | Full PoC output + server log from live verification |
+| `README.md` | Vulnerability details, usage examples, and references |
+| `LICENSE` | GPLv3 license |
 
 ## References
 
